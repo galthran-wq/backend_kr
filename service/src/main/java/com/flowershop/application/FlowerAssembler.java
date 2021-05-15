@@ -12,6 +12,7 @@ public class FlowerAssembler {
                 .description(flower.getDescription())
                 .price(flower.getPrice())
                 .image(flower.getImage())
+                .availableAmount(flower.getAvailableAmount())
                 .build();
     }
 

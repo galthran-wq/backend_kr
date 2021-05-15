@@ -26,10 +26,12 @@ public class FlowerApiTest extends FeignBasedRestTest {
     public static final String TEST_DESCRIPTION = "test-description";
     public static final Double TEST_PRICE = 0.1;
     public static final String TEST_IMAGE = "test-image";
+    public static final Integer TEST_AVAILABLE_AMOUNT = 3;
     public static final String ALTERED_NAME = "altered-name";
     public static final String ALTERED_DESCRIPTION = "altered-description";
     public static final Double ALTERED_PRICE = 1.0;
     public static final String ALTERED_IMAGE = "altered-image";
+    public static final Integer ALTERED_AVAILABLE_AMOUNT = 2;
 
     @Autowired
     private AuthSupport auth;
@@ -50,6 +52,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
                 .image(ALTERED_IMAGE)
                 .name(ALTERED_NAME)
                 .description(ALTERED_DESCRIPTION)
+                .availableAmount(ALTERED_AVAILABLE_AMOUNT)
                 .price(ALTERED_PRICE)
                 .build();
         AddFlower addCommand = addFlowerCommand();
@@ -88,6 +91,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
         assertThat(flower.getDescription()).isEqualTo(command.getDescription());
         assertThat(flower.getPrice()).isEqualTo(command.getPrice());
         assertThat(flower.getImage()).isEqualTo(command.getImage());
+        assertThat(flower.getAvailableAmount()).isEqualTo(command.getAvailableAmount());
     }
 
     @Test
@@ -127,6 +131,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
 
         UpdateFlower updateCommand = UpdateFlower.builder()
                 .image(ALTERED_IMAGE)
+                .availableAmount(ALTERED_AVAILABLE_AMOUNT)
                 .name(ALTERED_NAME)
                 .description(ALTERED_DESCRIPTION)
                 .price(ALTERED_PRICE)
@@ -138,6 +143,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
         assertThat(updated.getName()).isEqualTo(ALTERED_NAME);
         assertThat(updated.getDescription()).isEqualTo(ALTERED_DESCRIPTION);
         assertThat(updated.getPrice()).isEqualTo(ALTERED_PRICE);
+        assertThat(updated.getAvailableAmount()).isEqualTo(ALTERED_AVAILABLE_AMOUNT);
         assertThat(updated.getImage()).isEqualTo(ALTERED_IMAGE);
     }
 
@@ -146,6 +152,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
                 .name(UUID.randomUUID().toString())
                 .description(UUID.randomUUID().toString())
                 .price(new Random().nextDouble())
+                .availableAmount(Math.abs(new Random().nextInt()))
                 .image(UUID.randomUUID().toString())
                 .build();
     }

@@ -17,6 +17,7 @@ public class UpdateFlower implements Command<UpdateFlowerResult> {
     private String image;
     private String description;
     private Double price;
+    private Integer availableAmount;
     private String currentUsername;
 
 }

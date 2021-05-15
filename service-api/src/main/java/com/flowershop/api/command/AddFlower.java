@@ -18,6 +18,8 @@ public class AddFlower implements Command<AddFlowerResult> {
     private Double price;
     private String image;
     private String description;
+    @PositiveOrZero
+    private Integer availableAmount;
     private String currentUsername;
 
 
