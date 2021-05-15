@@ -35,6 +35,7 @@ public class UpdateFlowerHandler implements CommandHandler<UpdateFlowerResult, U
 
         Flower.FlowerBuilder flowerBuilder = flowerBySlug.toBuilder()
                 .image(command.getImage())
+                .availableAmount(command.getAvailableAmount())
                 .price(command.getPrice())
                 .description(command.getDescription())
                 .slug(command.getSlug())

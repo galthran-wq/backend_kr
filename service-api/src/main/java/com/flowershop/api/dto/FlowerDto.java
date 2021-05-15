@@ -16,4 +16,5 @@ public class FlowerDto {
     private String image;
     private String description;
     private Double price;
+    private Integer availableAmount;
 }

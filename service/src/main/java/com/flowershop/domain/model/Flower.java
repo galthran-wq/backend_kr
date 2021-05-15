@@ -20,6 +20,7 @@ public class Flower {
     private String description;
     private Double price;
     private String image;
+    private Integer availableAmount;
 
     @Singular
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

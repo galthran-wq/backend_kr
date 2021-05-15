@@ -43,6 +43,7 @@ public class AddFlowerHandler implements CommandHandler<AddFlowerResult, AddFlow
 
         Flower.FlowerBuilder flowerBuilder = Flower.builder()
                 .image(command.getImage())
+                .availableAmount(command.getAvailableAmount())
                 .id(UUID.randomUUID())
                 .slug(slugService.makeSlug(command.getName()))
                 .name(command.getName())
