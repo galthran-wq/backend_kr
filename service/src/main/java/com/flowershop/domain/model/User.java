@@ -9,10 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,5 +30,13 @@ public class User {
     private String bio;
     private String image;
     private Boolean is_owner;
+
+    @OneToOne(mappedBy = "buyer", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ShoppingCart shoppingCart;
+
+    // todo this information is not displayed anywhere
+    @OneToMany(mappedBy = "holder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<FlowerProduct> obtainedFlowerProducts;
 
 }

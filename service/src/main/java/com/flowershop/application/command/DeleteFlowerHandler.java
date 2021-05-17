@@ -13,7 +13,6 @@ import com.flowershop.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-// todo permissions owner
 @RequiredArgsConstructor
 @Service
 public class DeleteFlowerHandler implements CommandHandler<DeleteFlowerResult, DeleteFlower> {

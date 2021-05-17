@@ -26,7 +26,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
     public static final String TEST_DESCRIPTION = "test-description";
     public static final Double TEST_PRICE = 0.1;
     public static final String TEST_IMAGE = "test-image";
-    public static final Integer TEST_AVAILABLE_AMOUNT = 3;
+    public static final Integer TEST_AVAILABLE_AMOUNT = 5;
     public static final String ALTERED_NAME = "altered-name";
     public static final String ALTERED_DESCRIPTION = "altered-description";
     public static final Double ALTERED_PRICE = 1.0;
@@ -147,12 +147,12 @@ public class FlowerApiTest extends FeignBasedRestTest {
         assertThat(updated.getImage()).isEqualTo(ALTERED_IMAGE);
     }
 
-    private static AddFlower addFlowerCommand() {
+    public static AddFlower addFlowerCommand() {
         return AddFlower.builder()
                 .name(UUID.randomUUID().toString())
                 .description(UUID.randomUUID().toString())
                 .price(new Random().nextDouble())
-                .availableAmount(Math.abs(new Random().nextInt()))
+                .availableAmount(TEST_AVAILABLE_AMOUNT)
                 .image(UUID.randomUUID().toString())
                 .build();
     }

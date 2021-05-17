@@ -10,6 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Getter
+@Setter
 @Entity
 public class Flower {
 

@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ShoppingCartDto {
-    FlowerProductDto[] flowerProducts;
-    Double totalPrice;
+public class FlowerProductDto {
+    FlowerDto flower;
+    Integer totalAmount;
+    Double totalProductPrice;
 }
