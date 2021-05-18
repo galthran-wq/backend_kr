@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .antMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/flowers/**", "/api/profiles/**").permitAll()
-                .anyRequest().permitAll();
+                .anyRequest().authenticated();
     }
 
     @Bean

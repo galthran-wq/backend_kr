@@ -35,7 +35,6 @@ public class User {
     @PrimaryKeyJoinColumn
     private ShoppingCart shoppingCart;
 
-    // todo this information is not displayed anywhere
     @OneToMany(mappedBy = "holder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<FlowerProduct> obtainedFlowerProducts;
 
