@@ -16,15 +16,17 @@ public interface DataResitRepository extends CrudRepository<Resit, UUID> {
 
     Optional<Resit> findByName(String name);
 
-    // todo
-    @Query("SELECT DISTINCT flower_ FROM Resit flower_ " +
+    @Query("SELECT DISTINCT resit_ FROM Resit resit_ " +
             "WHERE " +
-            "flower_.price = :price")
-    List<Resit> findByFilters(@Param("price") Double price,
+            "resit_.name = :name AND " +
+            "resit_.teacherName = :teacherName")
+    List<Resit> findByFilters(@Param("price") String name,
+                                String teacherName,
                                 Pageable pageable);
 
-    // todo
-    @Query("SELECT flower_ FROM Resit flower_ JOIN flower_.owners owner WHERE owner.id IN :owners")
-    List<Resit> findByOwners(List<UUID> owners, Pageable pageable);
+    @Query("SELECT resit_ FROM Resit resit_ " +
+            "JOIN resit_.participants participant " +
+            "WHERE participant.id IN :participants")
+    List<Resit> findByParticipants(List<UUID> participants, Pageable pageable);
 
 }

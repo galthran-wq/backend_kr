@@ -32,6 +32,10 @@ public class CancelResitHandler implements CommandHandler<CancelResitResult, Can
         Resit resitBySlug = resitRepository.findBySlug(command.getSlug())
                 .orElseThrow(() -> NotFoundException.notFound("No resit with slug \"[slug=%s]\" found", command.getSlug()));
 
+        if (resitBySlug.getResponsibleTeacher().getId().compareTo(currentUser.getId()) != 0) {
+            throw ForbiddenException.forbidden("you are not responsible for this resit");
+        }
+
         resitRepository.delete(resitBySlug);
         return new CancelResitResult();
     }

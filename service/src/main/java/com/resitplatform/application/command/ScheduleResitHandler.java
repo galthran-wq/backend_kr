@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class ScheduleResitHandler implements CommandHandler<ScheduleResitResult, ScheduleResit> {
-    private final ResitRepository flowerRepository;
+    private final ResitRepository resitRepository;
     private final UserRepository userRepository;
     private final SlugService slugService;
 
@@ -36,23 +36,22 @@ public class ScheduleResitHandler implements CommandHandler<ScheduleResitResult,
         }
 
         // check if such name already exists
-        Optional<Resit> flowerByNameOptional = flowerRepository.findByName(command.getName());
-        if (flowerByNameOptional.isPresent()) {
-            throw BadRequestException.badRequest("flower [name=%s] already exists", command.getName());
+        Optional<Resit> resitByNameOptional = resitRepository.findByName(command.getName());
+        if (resitByNameOptional.isPresent()) {
+            throw BadRequestException.badRequest("resit [name=%s] already exists", command.getName());
         }
 
-        Resit.ResitBuilder flowerBuilder = Resit.builder()
+        Resit.ResitBuilder resitBuilder = Resit.builder()
+                .responsibleTeacher(currentUser) // todo is it right?
                 .image(command.getImage())
-                .availableAmount(command.getAvailableAmount())
                 .id(UUID.randomUUID())
                 .slug(slugService.makeSlug(command.getName()))
                 .name(command.getName())
-                .description(command.getDescription())
-                .price(command.getPrice());
+                .description(command.getDescription());
 
-        Resit flower = flowerRepository.save(flowerBuilder.build());
+        Resit resit = resitRepository.save(resitBuilder.build());
 
-        return new ScheduleResitResult(ResitAssembler.assemble(flower));
+        return new ScheduleResitResult(ResitAssembler.assemble(resit));
     }
 
 }

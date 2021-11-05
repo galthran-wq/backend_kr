@@ -1,11 +1,11 @@
 package com.resitplatform.api.query;
 
-import com.resitplatform.api.dto.FlowerDto;
+import com.resitplatform.api.dto.ResitDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
 public class GetResitResult {
-    private FlowerDto flower;
+    private ResitDto resit;
 }

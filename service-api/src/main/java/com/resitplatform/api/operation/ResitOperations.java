@@ -7,23 +7,23 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-public interface FlowerOperations {
-    @GetMapping("/flowers{?price,limit,offset}")
+public interface ResitOperations {
+    @GetMapping("/resits{?price,limit,offset}")
     GetResitsResult findByFilters(@RequestParam(required = false) Double price,
                                   @RequestParam(defaultValue = "20") Integer limit,
                                   @RequestParam(defaultValue = "0") Integer offset);
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/flowers")
+    @PostMapping("/resits")
     ScheduleResitResult add(@Valid @RequestBody ScheduleResit command);
 
-    @GetMapping("/flowers/{slug}")
+    @GetMapping("/resits/{slug}")
     GetResitResult findBySlug(@PathVariable("slug") String slug);
 
-    @PutMapping("/flowers/{slug}")
+    @PutMapping("/resits/{slug}")
     UpdateResitResult updateBySlug(@PathVariable("slug") String slug, @Valid @RequestBody UpdateResit command);
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/flowers/{slug}")
+    @DeleteMapping("/resits/{slug}")
     void deleteBySlug(@PathVariable("slug") String slug);
 }

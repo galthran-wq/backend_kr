@@ -42,7 +42,7 @@ public class RegisterUserHandler implements CommandHandler<RegisterUserResult, R
                 .username(command.getUsername())
                 .email(command.getEmail())
                 .password(passwordEncoder.encode(command.getPassword()))
-                .is_owner(Boolean.FALSE)
+                .is_teacher(command.getIsTeacher())
                 .build();
         userRepository.save(user);
 

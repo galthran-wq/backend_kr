@@ -1,7 +1,7 @@
 package com.resitplatform.infrastructure.web;
 
 import com.resitplatform.api.command.*;
-import com.resitplatform.api.operation.FlowerOperations;
+import com.resitplatform.api.operation.ResitOperations;
 import com.resitplatform.api.query.GetResit;
 import com.resitplatform.api.query.GetResitResult;
 import com.resitplatform.api.query.GetResits;
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.version}")
-public class FlowerController implements FlowerOperations {
+public class ResitController implements ResitOperations {
 
     private final Bus bus;
     private final AuthenticationService auth;
@@ -35,7 +35,7 @@ public class FlowerController implements FlowerOperations {
     }
 
     @Override
-    public ScheduleResitResult add(@Valid AddFlower command) {
+    public ScheduleResitResult add(@Valid ScheduleResit command) {
         return bus.executeCommand(command.toBuilder().currentUsername(auth.currentUsername()).build());
     }
 

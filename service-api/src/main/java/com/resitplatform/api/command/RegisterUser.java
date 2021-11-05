@@ -24,5 +24,7 @@ public class RegisterUser implements Command<RegisterUserResult> {
     private String username;
     @NotBlank
     private String password;
+    @NotBlank
+    private Boolean isTeacher;
 
 }

@@ -14,7 +14,7 @@ public interface ResitRepository {
 
     List<Resit> findByOwners(List<UUID> owners, Integer limit, Integer offset);
 
-    List<Resit> findByFilters(Double price, Integer limit, Integer offset);
+    List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset);
 
     void delete(Resit resit);
 

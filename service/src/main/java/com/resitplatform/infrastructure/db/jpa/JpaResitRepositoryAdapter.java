@@ -31,14 +31,14 @@ public class JpaResitRepositoryAdapter implements ResitRepository {
     @Override
     public List<Resit> findByOwners(List<UUID> owners, Integer limit, Integer offset) {
         Pageable pageable = new OffsetBasedPageRequest(limit, offset, Sort.by(Sort.Order.desc("name")));
-        return repository.findByOwners(owners, pageable);
+        return repository.findByParticipants(owners, pageable);
     }
 
     // todo
     @Override
-    public List<Resit> findByFilters(Double price, Integer limit, Integer offset) {
+    public List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset) {
         Pageable pageable = new OffsetBasedPageRequest(limit, offset, Sort.by(Sort.Order.desc("name")));
-        return repository.findByFilters(price, pageable);
+        return repository.findByFilters(name, teacherName, pageable);
     }
 
     @Override

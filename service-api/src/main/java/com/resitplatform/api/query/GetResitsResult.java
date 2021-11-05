@@ -1,6 +1,6 @@
 package com.resitplatform.api.query;
 
-import com.resitplatform.api.dto.FlowerDto;
+import com.resitplatform.api.dto.ResitDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 public class GetResitsResult {
 
-    private List<FlowerDto> flowers;
-    private Integer flowersCount;
+    private List<ResitDto> resits;
+    private Integer resitsCount;
 
 }
