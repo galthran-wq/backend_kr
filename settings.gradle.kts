@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "flower-shop-backend"
+rootProject.name = "resit-platform-backend"
 include("service-bus")
 include("service-api")
 include("service")
