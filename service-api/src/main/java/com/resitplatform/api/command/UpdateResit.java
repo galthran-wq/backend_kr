@@ -12,10 +12,11 @@ import lombok.Getter;
 @JsonRootName("flower")
 public class UpdateResit implements Command<UpdateResitResult> {
 
-    private String slug;
     private String name;
     private String image;
     private String description;
+    // these are the fields that are automatically set up on request
+    private String slug;
     private String currentUsername;
 
 }

@@ -10,16 +10,13 @@ import javax.validation.constraints.PositiveOrZero;
 
 @Builder(toBuilder = true)
 @Getter
-@JsonRootName("flower")
+@JsonRootName("resit")
 public class ScheduleResit implements Command<ScheduleResitResult> {
     @NotBlank
     private String name;
-    @PositiveOrZero
-    private Double price;
+    @NotBlank
     private String image;
     private String description;
-    @PositiveOrZero
-    private Integer availableAmount;
     private String currentUsername;
 
 
