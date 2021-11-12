@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +25,7 @@ public class RegisterUser implements Command<RegisterUserResult> {
     private String username;
     @NotBlank
     private String password;
-    @NotBlank
+    @NotNull
     private Boolean isTeacher;
 
 }
