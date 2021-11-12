@@ -6,6 +6,7 @@ import com.resitplatform.application.ResitAssembler;
 import com.resitplatform.application.exception.BadRequestException;
 import com.resitplatform.application.exception.ForbiddenException;
 import com.resitplatform.application.exception.NotFoundException;
+import com.resitplatform.application.service.SlugService;
 import com.resitplatform.bus.CommandHandler;
 import com.resitplatform.domain.model.Resit;
 import com.resitplatform.domain.model.User;
@@ -20,6 +21,8 @@ public class UpdateResitHandler implements CommandHandler<UpdateResitResult, Upd
 
     private final ResitRepository resitRepository;
     private final UserRepository userRepository;
+    private final SlugService slugService;
+
 
     @Override
     public UpdateResitResult handle(UpdateResit command) {
@@ -33,13 +36,18 @@ public class UpdateResitHandler implements CommandHandler<UpdateResitResult, Upd
         Resit resitBySlug = resitRepository.findBySlug(command.getSlug())
                 .orElseThrow(() -> NotFoundException.notFound("No resit with slug \"[slug=%s]\" found", command.getSlug()));
 
-        Resit.ResitBuilder resitBuilder = resitBySlug.toBuilder()
+        if (resitBySlug.getResponsibleTeacher().getId().compareTo(currentUser.getId()) != 0) {
+            throw ForbiddenException.forbidden("you are not responsible for this resit");
+        }
+
+        Resit updatedResit = resitBySlug.toBuilder()
                 .image(command.getImage())
                 .description(command.getDescription())
-                .slug(command.getSlug())
-                .name(command.getName());
+                .name(command.getName())
+                .slug(slugService.makeSlug(command.getName()))
+                .build();
 
-        resitRepository.save(resitBuilder.build());
-        return new UpdateResitResult(ResitAssembler.assemble(resitBuilder.build()));
+        resitRepository.save(updatedResit);
+        return new UpdateResitResult(ResitAssembler.assemble(updatedResit));
     }
 }

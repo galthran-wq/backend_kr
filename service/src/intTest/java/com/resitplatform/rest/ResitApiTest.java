@@ -1,9 +1,10 @@
 package com.resitplatform.rest;
 
-import com.resitplatform.api.command.AddFlower;
+import com.resitplatform.api.command.ScheduleResit;
 import com.resitplatform.api.command.UpdateResit;
-import com.resitplatform.api.dto.FlowerDto;
+import com.resitplatform.api.dto.ResitDto;
 import com.resitplatform.api.operation.ResitClient;
+import com.resitplatform.application.service.SlugService;
 import com.resitplatform.rest.auth.AuthSupport;
 import com.resitplatform.rest.support.FeignBasedRestTest;
 import feign.FeignException;
@@ -14,30 +15,29 @@ import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
-public class FlowerApiTest extends FeignBasedRestTest {
+public class ResitApiTest extends FeignBasedRestTest {
 
     public static final String TEST_NAME = "test-name";
-    public static final String TEST_DESCRIPTION = "test-description";
-    public static final Double TEST_PRICE = 0.1;
+    public static final String TEST_SLUG = "test-name";
     public static final String TEST_IMAGE = "test-image";
-    public static final Integer TEST_AVAILABLE_AMOUNT = 5;
+    public static final String TEST_DESCRIPTION = "test-description";
     public static final String ALTERED_NAME = "altered-name";
     public static final String ALTERED_DESCRIPTION = "altered-description";
-    public static final Double ALTERED_PRICE = 1.0;
-    public static final String ALTERED_IMAGE = "altered-image";
-    public static final Integer ALTERED_AVAILABLE_AMOUNT = 2;
+    public static final String ALTERED_IMAGE = "test-image";
 
     @Autowired
     private AuthSupport auth;
 
     @Autowired
-    private ResitClient flowerClient;
+    private ResitClient resitClient;
+
+    @Autowired
+    private SlugService slugService;
 
     @AfterEach
     void afterEach() {
@@ -45,34 +45,35 @@ public class FlowerApiTest extends FeignBasedRestTest {
     }
 
     @Test
-    void should_forbidWriteActionsForNonOwners() {
+    void should_forbidWriteActionsForNonTeacher() {
         auth.register().login();
 
         UpdateResit updateCommand = UpdateResit.builder()
+                .slug(TEST_SLUG)
                 .image(ALTERED_IMAGE)
                 .name(ALTERED_NAME)
                 .description(ALTERED_DESCRIPTION)
-                .availableAmount(ALTERED_AVAILABLE_AMOUNT)
-                .price(ALTERED_PRICE)
                 .build();
-        AddFlower addCommand = addFlowerCommand();
 
-        FeignException addException = catchThrowableOfType(
-                () -> flowerClient.add(addCommand),
+        ScheduleResit scheduleResit = getScheduleResitCommand();
+
+        FeignException scheduleException = catchThrowableOfType(
+                () -> resitClient.schedule(scheduleResit),
                 FeignException.class
         );
 
         FeignException updateException = catchThrowableOfType(
-                () -> flowerClient.updateBySlug(updateCommand.getName(), updateCommand),
+                () -> resitClient.updateBySlug(updateCommand.getName(), updateCommand),
                 FeignException.class
         );
 
-        FeignException deleteException = catchThrowableOfType(
-                () -> flowerClient.deleteBySlug(addCommand.getName()),
+        FeignException cancelException = catchThrowableOfType(
+                () -> resitClient.cancelBySlug(scheduleResit.getName()),
                 FeignException.class
         );
 
-        for (FeignException exception: new ArrayList<>(Arrays.asList(addException, updateException, deleteException))) {
+        for (FeignException exception: new ArrayList<>(Arrays.asList(scheduleException, updateException, cancelException))) {
+            System.out.println(exception.status());
             assertThat(exception.status()).isEqualTo(403);
             assertThat(exception).isNotNull();
         }
@@ -80,30 +81,32 @@ public class FlowerApiTest extends FeignBasedRestTest {
     }
 
     @Test
-    void should_returnCorrectFlowerData() {
-        auth.registerTeacher().login();
+    void should_returnCorrectResitData() {
+        AuthSupport.RegisteredUser user = auth.registerTeacher().login();
 
-        AddFlower command = addFlowerCommand();
-        FlowerDto flower = flowerClient.add(command).getFlower();
+        ScheduleResit scheduleResitCommand = getScheduleResitCommand();
+        ResitDto resit = resitClient.schedule(scheduleResitCommand).getResit();
 
-        assertThat(flower.getSlug()).isEqualTo(command.getName());
-        assertThat(flower.getName()).isEqualTo(command.getName());
-        assertThat(flower.getDescription()).isEqualTo(command.getDescription());
-        assertThat(flower.getPrice()).isEqualTo(command.getPrice());
-        assertThat(flower.getImage()).isEqualTo(command.getImage());
-        assertThat(flower.getAvailableAmount()).isEqualTo(command.getAvailableAmount());
+        assertThat(resit.getSlug()).isEqualTo(
+                slugService.makeSlug(scheduleResitCommand.getName())
+        );
+        assertThat(resit.getName()).isEqualTo(scheduleResitCommand.getName());
+        assertThat(resit.getTeacherName()).isEqualTo(user.getUsername());
+        assertThat(resit.getDescription()).isEqualTo(scheduleResitCommand.getDescription());
+        assertThat(resit.getImage()).isEqualTo(scheduleResitCommand.getImage());
     }
-
+//
     @Test
-    void should_returnCorrectFlowerData_when_deleteByOwner() {
+    void should_returnCorrectResitData_when_deleteByTeacher() {
         auth.registerTeacher().login();
 
-        FlowerDto created = flowerClient.add(addFlowerCommand()).getFlower();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
 
-        flowerClient.deleteBySlug(created.getSlug());
+        resitClient.cancelBySlug(created.getSlug());
 
+        // assert that it is no more present
         FeignException exception = catchThrowableOfType(
-                () -> flowerClient.findBySlug(created.getSlug()),
+                () -> resitClient.findBySlug(created.getSlug()),
                 FeignException.class
         );
 
@@ -112,11 +115,11 @@ public class FlowerApiTest extends FeignBasedRestTest {
     }
 
     @Test
-    void should_returnCorrectFlowerData_when_deleteNotExistingByOwner() {
+    void should_returnCorrectResitData_when_deleteNotExistingByTeacher() {
         auth.registerTeacher().login();
 
         FeignException exception = catchThrowableOfType(
-                () -> flowerClient.deleteBySlug("not-existing"),
+                () -> resitClient.cancelBySlug("not-existing"),
                 FeignException.class
         );
 
@@ -124,35 +127,28 @@ public class FlowerApiTest extends FeignBasedRestTest {
     }
 
     @Test
-    void should_returnCorrectFlowerData_when_updateByOwner() {
+    void should_returnCorrectResitData_when_updateByOwner() {
         auth.registerTeacher().login();
 
-        FlowerDto created = flowerClient.add(addFlowerCommand()).getFlower();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
 
         UpdateResit updateCommand = UpdateResit.builder()
                 .image(ALTERED_IMAGE)
-                .availableAmount(ALTERED_AVAILABLE_AMOUNT)
                 .name(ALTERED_NAME)
                 .description(ALTERED_DESCRIPTION)
-                .price(ALTERED_PRICE)
                 .build();
 
-        FlowerDto updated = flowerClient.updateBySlug(created.getSlug(), updateCommand).getFlower();
-// todo
-//        assertThat(updated.getSlug()).isEqualTo(ALTERED_NAME);
+        ResitDto updated = resitClient.updateBySlug(created.getSlug(), updateCommand).getResit();
+        assertThat(updated.getSlug()).isEqualTo(slugService.makeSlug(ALTERED_NAME));
         assertThat(updated.getName()).isEqualTo(ALTERED_NAME);
         assertThat(updated.getDescription()).isEqualTo(ALTERED_DESCRIPTION);
-        assertThat(updated.getPrice()).isEqualTo(ALTERED_PRICE);
-        assertThat(updated.getAvailableAmount()).isEqualTo(ALTERED_AVAILABLE_AMOUNT);
         assertThat(updated.getImage()).isEqualTo(ALTERED_IMAGE);
     }
 
-    public static AddFlower addFlowerCommand() {
-        return AddFlower.builder()
+    public static ScheduleResit getScheduleResitCommand() {
+        return ScheduleResit.builder()
                 .name(UUID.randomUUID().toString())
                 .description(UUID.randomUUID().toString())
-                .price(new Random().nextDouble())
-                .availableAmount(TEST_AVAILABLE_AMOUNT)
                 .image(UUID.randomUUID().toString())
                 .build();
     }

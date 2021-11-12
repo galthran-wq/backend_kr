@@ -3,6 +3,7 @@ package com.resitplatform.domain.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,7 +22,10 @@ public class Resit {
     private String description;
     private String image;
 
-    private Boolean startDate;
+//    @Column(name="START_DATE")
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @NotBlank
+//    private java.util.Date startDate;
     private Boolean hasEnded;
 
     @ManyToOne(cascade = CascadeType.ALL)

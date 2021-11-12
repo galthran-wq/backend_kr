@@ -28,31 +28,37 @@ public class AuthSupport {
         return register(uuid, email(uuid), uuid);
     }
 
-    public RegisteredUser register(String username, String email, String password) {
+    // todo is_teacher optional false by default
+    public RegisteredUser register(String username, String email, String password, Boolean isTeacher) {
         userClient.register(RegisterUser.builder()
                 .username(username)
                 .email(email)
                 .password(password)
+                .isTeacher(isTeacher)
                 .build());
         return new RegisteredUser(email, username, password);
     }
 
-    public RegisteredUser registerOwner() {
-        String uuid = UUID.randomUUID().toString();
-        return registerOwner(uuid, email(uuid), uuid);
+    public RegisteredUser register(String username, String email, String password) {
+        return register(username, email, password, Boolean.FALSE);
     }
 
-    public RegisteredUser registerOwner(String username, String email, String password) {
-        RegisteredUser userDto = register(username, email, password);
-        User user = userRepository.findByUsername(userDto.getUsername())
-                .orElseThrow();
-        userRepository.save(user
-                .toBuilder()
-                .is_owner(Boolean.TRUE)
-                .build()
-        );
-        return userDto;
+    public RegisteredUser registerTeacher() {
+        String uuid = UUID.randomUUID().toString();
+        return registerTeacher(uuid, email(uuid), uuid);
+    }
 
+    public RegisteredUser registerTeacher(String username, String email, String password) {
+//        RegisteredUser userDto = register(username, email, password);
+//        User user = userRepository.findByUsername(userDto.getUsername())
+//                .orElseThrow();
+//        userRepository.save(user
+//                .toBuilder()
+//                .is_teacher(Boolean.TRUE)
+//                .build()
+//        );
+//        return userDto;
+        return register(username, email, password, Boolean.TRUE);
     }
 
     private String email(String uuid) {

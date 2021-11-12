@@ -22,13 +22,14 @@ public class GetResitsHandler implements QueryHandler<GetResitsResult, GetResits
     // todo test, not sure how it works with several fields empty
     @Override
     public GetResitsResult handle(GetResits query) {
-        List<Resit> resitList = resitRepository
-                .findByFilters(query.getName(), query.getTeacherName(), query.getLimit(), query.getOffset());
+//        List<Resit> resitList = resitRepository
+//                .findByFilters(query.getName(), query.getTeacherName(), query.getLimit(), query.getOffset());
+//
+//        List<ResitDto> results = new ArrayList<>();
+//
+//        resitList.forEach(resit -> results.add(ResitAssembler.assemble(resit)));
 
-        List<ResitDto> results = new ArrayList<>();
-
-        resitList.forEach(resit -> results.add(ResitAssembler.assemble(resit)));
-
-        return new GetResitsResult(results, results.size());
+//        return new GetResitsResult(results, results.size());
+        return new GetResitsResult(new ArrayList<>(), 0);
     }
 }

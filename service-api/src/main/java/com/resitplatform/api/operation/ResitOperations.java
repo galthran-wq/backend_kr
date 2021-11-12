@@ -16,7 +16,7 @@ public interface ResitOperations {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/resits")
-    ScheduleResitResult add(@Valid @RequestBody ScheduleResit command);
+    ScheduleResitResult schedule(@Valid @RequestBody ScheduleResit command);
 
     @GetMapping("/resits/{slug}")
     GetResitResult findBySlug(@PathVariable("slug") String slug);
@@ -26,5 +26,5 @@ public interface ResitOperations {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/resits/{slug}")
-    void deleteBySlug(@PathVariable("slug") String slug);
+    void cancelBySlug(@PathVariable("slug") String slug);
 }

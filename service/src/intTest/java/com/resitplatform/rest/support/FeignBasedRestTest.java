@@ -1,7 +1,7 @@
 
 package com.resitplatform.rest.support;
 
-import com.resitplatform.api.operation.FlowerClient;
+import com.resitplatform.api.operation.ResitClient;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -10,7 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 import org.springframework.util.SocketUtils;
 
-@EnableFeignClients(basePackageClasses = FlowerClient.class)
+@EnableFeignClients(basePackageClasses = ResitClient.class)
 @Import(ServerPortCustomizer.class)
 @ExtendWith(FeignBasedRestTest.Before.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

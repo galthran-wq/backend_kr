@@ -52,7 +52,7 @@ public class ResitController implements ResitOperations {
     }
 
     @Override
-    public void deleteBySlug(String slug) {
+    public void cancelBySlug(String slug) {
         bus.executeCommand(new CancelResit(auth.currentUsername(), slug));
     }
 

@@ -12,9 +12,10 @@ public interface ResitRepository {
 
     Optional<Resit> findByName(String name);
 
+    // todo
     List<Resit> findByOwners(List<UUID> owners, Integer limit, Integer offset);
 
-    List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset);
+//    List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset);
 
     void delete(Resit resit);
 

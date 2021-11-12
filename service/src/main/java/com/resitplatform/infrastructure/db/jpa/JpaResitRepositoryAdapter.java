@@ -34,12 +34,12 @@ public class JpaResitRepositoryAdapter implements ResitRepository {
         return repository.findByParticipants(owners, pageable);
     }
 
-    // todo
-    @Override
-    public List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset) {
-        Pageable pageable = new OffsetBasedPageRequest(limit, offset, Sort.by(Sort.Order.desc("name")));
-        return repository.findByFilters(name, teacherName, pageable);
-    }
+//    // todo
+//    @Override
+//    public List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset) {
+//        Pageable pageable = new OffsetBasedPageRequest(limit, offset, Sort.by(Sort.Order.desc("name")));
+//        return repository.findByFilters(name, teacherName, pageable);
+//    }
 
     @Override
     public void delete(Resit flower) {

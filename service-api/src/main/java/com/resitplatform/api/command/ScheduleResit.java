@@ -16,6 +16,8 @@ public class ScheduleResit implements Command<ScheduleResitResult> {
     private String name;
     @NotBlank
     private String image;
+//    @NotBlank
+//    private
     private String description;
     private String currentUsername;
 

@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 public class ResitDto {
     private String slug;
     private String name;
+    private String teacherName;
     private String image;
     private String description;
-    private Double price;
-    private Integer availableAmount;
 }
