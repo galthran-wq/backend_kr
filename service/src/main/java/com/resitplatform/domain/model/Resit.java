@@ -24,7 +24,7 @@ public class Resit {
     private Boolean startDate;
     private Boolean hasEnded;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     private User responsibleTeacher;
 
     @Singular
