@@ -37,7 +37,7 @@ public class ResitController implements ResitOperations {
     }
 
     @Override
-    public ScheduleResitResult add(@Valid ScheduleResit command) {
+    public ScheduleResitResult schedule(@Valid ScheduleResit command) {
         return bus.executeCommand(command.toBuilder().currentUsername(auth.currentUsername()).build());
     }
 
