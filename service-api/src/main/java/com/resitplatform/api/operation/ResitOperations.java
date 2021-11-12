@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 public interface ResitOperations {
-    @GetMapping("/resits{?price,limit,offset}")
-    GetResitsResult findByFilters(@RequestParam(required = false) Double price,
+    @GetMapping("/resits{?name,teacherName,limit,offset}")
+    GetResitsResult findByFilters(@RequestParam(required = false) String name,
+                                  @RequestParam(required = false) String teacherName,
                                   @RequestParam(defaultValue = "20") Integer limit,
                                   @RequestParam(defaultValue = "0") Integer offset);
 
