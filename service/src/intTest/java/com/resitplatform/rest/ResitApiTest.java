@@ -3,7 +3,7 @@ package com.resitplatform.rest;
 import com.resitplatform.api.command.AddFlower;
 import com.resitplatform.api.command.UpdateResit;
 import com.resitplatform.api.dto.FlowerDto;
-import com.resitplatform.api.operation.FlowerClient;
+import com.resitplatform.api.operation.ResitClient;
 import com.resitplatform.rest.auth.AuthSupport;
 import com.resitplatform.rest.support.FeignBasedRestTest;
 import feign.FeignException;
@@ -37,7 +37,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
     private AuthSupport auth;
 
     @Autowired
-    private FlowerClient flowerClient;
+    private ResitClient flowerClient;
 
     @AfterEach
     void afterEach() {
@@ -81,7 +81,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
 
     @Test
     void should_returnCorrectFlowerData() {
-        auth.registerOwner().login();
+        auth.registerTeacher().login();
 
         AddFlower command = addFlowerCommand();
         FlowerDto flower = flowerClient.add(command).getFlower();
@@ -96,7 +96,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
 
     @Test
     void should_returnCorrectFlowerData_when_deleteByOwner() {
-        auth.registerOwner().login();
+        auth.registerTeacher().login();
 
         FlowerDto created = flowerClient.add(addFlowerCommand()).getFlower();
 
@@ -113,7 +113,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
 
     @Test
     void should_returnCorrectFlowerData_when_deleteNotExistingByOwner() {
-        auth.registerOwner().login();
+        auth.registerTeacher().login();
 
         FeignException exception = catchThrowableOfType(
                 () -> flowerClient.deleteBySlug("not-existing"),
@@ -125,7 +125,7 @@ public class FlowerApiTest extends FeignBasedRestTest {
 
     @Test
     void should_returnCorrectFlowerData_when_updateByOwner() {
-        auth.registerOwner().login();
+        auth.registerTeacher().login();
 
         FlowerDto created = flowerClient.add(addFlowerCommand()).getFlower();
 

@@ -23,12 +23,14 @@ public class ResitController implements ResitOperations {
     private final AuthenticationService auth;
 
     @Override
-    public GetResitsResult findByFilters(Double price,
+    public GetResitsResult findByFilters(String name,
+                                         String teacherName,
                                          Integer limit,
                                          Integer offset) {
         return bus.executeQuery(GetResits.builder()
                 .currentUsername(auth.currentUsername())
-                .price(price)
+                .name(name)
+                .teacherName(teacherName)
                 .limit(limit)
                 .offset(offset)
                 .build());

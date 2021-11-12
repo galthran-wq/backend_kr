@@ -20,9 +20,9 @@ public interface DataResitRepository extends CrudRepository<Resit, UUID> {
             "WHERE " +
             "resit_.name = :name AND " +
             "resit_.teacherName = :teacherName")
-    List<Resit> findByFilters(@Param("price") String name,
-                                String teacherName,
-                                Pageable pageable);
+    List<Resit> findByFilters(@Param("name") String name,
+                              @Param("teacherName") String TeacherName,
+                              Pageable pageable);
 
     @Query("SELECT resit_ FROM Resit resit_ " +
             "JOIN resit_.participants participant " +
