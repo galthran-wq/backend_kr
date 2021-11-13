@@ -44,6 +44,7 @@ public class ResitApiTest extends FeignBasedRestTest {
         auth.logout();
     }
 
+    // general
     @Test
     void should_forbidWriteActionsForNonTeacher() {
         auth.register().login();
@@ -73,15 +74,33 @@ public class ResitApiTest extends FeignBasedRestTest {
         );
 
         for (FeignException exception: new ArrayList<>(Arrays.asList(scheduleException, updateException, cancelException))) {
-            System.out.println(exception.status());
-            assertThat(exception.status()).isEqualTo(403);
+            assertThat(exception.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
             assertThat(exception).isNotNull();
         }
 
     }
+    //
+    // scheduling
+    @Test
+    void should_returnCorrectResitData_onSchedule() {
+        AuthSupport.RegisteredUser user = auth.registerTeacher().login();
+
+        ScheduleResit scheduleResitCommand = getScheduleResitCommand();
+        ResitDto resit = resitClient.schedule(scheduleResitCommand).getResit();
+
+        assertThat(resit.getSlug()).isEqualTo(
+                slugService.makeSlug(scheduleResitCommand.getName())
+        );
+
+        FeignException scheduleException = catchThrowableOfType(
+                () -> resitClient.schedule(scheduleResitCommand),
+                FeignException.class
+        );
+        assertThat(scheduleException.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     @Test
-    void should_returnCorrectResitData() {
+    void should_forbidResitWithExistingName_onSchedule() {
         AuthSupport.RegisteredUser user = auth.registerTeacher().login();
 
         ScheduleResit scheduleResitCommand = getScheduleResitCommand();
@@ -95,9 +114,10 @@ public class ResitApiTest extends FeignBasedRestTest {
         assertThat(resit.getDescription()).isEqualTo(scheduleResitCommand.getDescription());
         assertThat(resit.getImage()).isEqualTo(scheduleResitCommand.getImage());
     }
-//
+    //
+    // canceling
     @Test
-    void should_returnCorrectResitData_when_deleteByTeacher() {
+    void should_returnCorrectResitData_onCancel() {
         auth.registerTeacher().login();
 
         ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
@@ -111,11 +131,26 @@ public class ResitApiTest extends FeignBasedRestTest {
         );
 
         assertThat(exception.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void should_forbidNonresponsibleTeachers_onCancel() {
+        auth.registerTeacher().login();
+
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        // login as another teacher
+        auth.registerTeacher().login();
+        FeignException cancelException = catchThrowableOfType(
+                () -> resitClient.cancelBySlug(created.getSlug()),
+                FeignException.class
+        );
+        assertThat(cancelException.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
     }
 
     @Test
-    void should_returnCorrectResitData_when_deleteNotExistingByTeacher() {
+    void should_returnCorrectNotExistingStatus_onCancel() {
         auth.registerTeacher().login();
 
         FeignException exception = catchThrowableOfType(
@@ -125,10 +160,11 @@ public class ResitApiTest extends FeignBasedRestTest {
 
         assertThat(exception.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
-
+    //
+    // updating
     @Test
-    void should_returnCorrectResitData_when_updateByOwner() {
-        auth.registerTeacher().login();
+    void should_returnCorrectResitData_onUpdate() {
+        AuthSupport.RegisteredUser user = auth.registerTeacher().login();
 
         ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
 
@@ -140,11 +176,34 @@ public class ResitApiTest extends FeignBasedRestTest {
 
         ResitDto updated = resitClient.updateBySlug(created.getSlug(), updateCommand).getResit();
         assertThat(updated.getSlug()).isEqualTo(slugService.makeSlug(ALTERED_NAME));
+        assertThat(updated.getTeacherName()).isEqualTo(user.getUsername());
         assertThat(updated.getName()).isEqualTo(ALTERED_NAME);
         assertThat(updated.getDescription()).isEqualTo(ALTERED_DESCRIPTION);
         assertThat(updated.getImage()).isEqualTo(ALTERED_IMAGE);
     }
 
+    @Test
+    void should_forbidNonresponsibleTeachers_onUpdate() {
+        auth.registerTeacher().login();
+
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        UpdateResit updateCommand = UpdateResit.builder()
+                .image(ALTERED_IMAGE)
+                .name(ALTERED_NAME)
+                .description(ALTERED_DESCRIPTION)
+                .build();
+
+        // login as another teacher
+        auth.registerTeacher().login();
+        FeignException cancelException = catchThrowableOfType(
+                () -> resitClient.updateBySlug(created.getSlug(), updateCommand),
+                FeignException.class
+        );
+        assertThat(cancelException.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
+
+    }
+    //
     public static ScheduleResit getScheduleResitCommand() {
         return ScheduleResit.builder()
                 .name(UUID.randomUUID().toString())
