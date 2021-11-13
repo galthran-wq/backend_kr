@@ -1,8 +1,9 @@
 package com.resitplatform.application.command;
 
+import com.resitplatform.api.command.SignOffResit;
+import com.resitplatform.api.command.SignOffResitResult;
 import com.resitplatform.api.command.SignOnResit;
 import com.resitplatform.api.command.SignOnResitResult;
-import com.resitplatform.api.dto.ResitDto;
 import com.resitplatform.application.ResitAssembler;
 import com.resitplatform.application.exception.BadRequestException;
 import com.resitplatform.application.exception.ForbiddenException;
@@ -19,32 +20,28 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
-public class SignOnResitHandler implements CommandHandler<SignOnResitResult, SignOnResit> {
+public class SignOffResultHandler implements CommandHandler<SignOffResitResult, SignOffResit> {
 
     private final ResitRepository resitRepository;
     private final UserRepository userRepository;
 
     @Override
-    public SignOnResitResult handle(SignOnResit command) {
+    public SignOffResitResult handle(SignOffResit command) {
         User currentUser = userRepository.findByUsername(command.getCurrentUsername())
                 .orElseThrow(() -> BadRequestException.badRequest("user [name=%s] does not exist", command.getCurrentUsername()));
-
-        if (currentUser.getIs_teacher()) {
-            throw ForbiddenException.forbidden("teachers are not allowed to sign on to a resit");
-        }
 
         Resit resit = resitRepository.findBySlug(command.getSlug())
                 .orElseThrow(() -> NotFoundException.notFound("resit [slug=%s] does not exist", command.getSlug()));
 
         Set<User> currentParticipants = resit.getParticipants();
 
-        if (currentParticipants.contains(currentUser)) {
-            throw BadRequestException.badRequest("you are already signed on to resit [slug=%%s]");
+        if (!currentParticipants.contains(currentUser)) {
+            throw BadRequestException.badRequest("you are not signed on to resit [slug=%%s]");
         }
 
-        currentParticipants.add(currentUser);
+        currentParticipants.remove(currentUser);
         resitRepository.save(resit);
 
-        return new SignOnResitResult(ResitAssembler.assemble(resit));
+        return new SignOffResitResult(ResitAssembler.assemble(resit));
     }
 }

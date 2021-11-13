@@ -1,6 +1,7 @@
 package com.resitplatform.rest;
 
 import com.resitplatform.api.command.ScheduleResit;
+import com.resitplatform.api.command.SignOffResit;
 import com.resitplatform.api.command.SignOnResit;
 import com.resitplatform.api.command.UpdateResit;
 import com.resitplatform.api.dto.ResitDto;
@@ -247,6 +248,45 @@ public class ResitApiTest extends FeignBasedRestTest {
         resitClient.signOn(created.getSlug(), new SignOnResit());
         FeignException exception = catchThrowableOfType(
                 () -> resitClient.signOn(created.getSlug(), new SignOnResit()),
+                FeignException.class
+        );
+        assertThat(exception.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+    //
+    // sign off resit
+    @Test
+    void should_returnCorrectData_onResitSignOff() {
+        auth.registerTeacher().login();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        auth.register().login();
+        resitClient.signOn(created.getSlug(), new SignOnResit());
+        ResitDto resit = resitClient.signOff(created.getSlug(), new SignOffResit()).getResit();
+
+        assertThat(resit.getParticipants()).isEmpty();
+    }
+
+    @Test
+    void should_returnCorrectNotExistingStatus_onSignOff() {
+        auth.register().login();
+
+        FeignException exception = catchThrowableOfType(
+                () -> resitClient.signOff("not-existing", new SignOffResit()),
+                FeignException.class
+        );
+
+        assertThat(exception.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void should_refuseNotSignedOn_onSignOff() {
+        auth.registerTeacher().login();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        auth.register().login();
+        FeignException exception = catchThrowableOfType(
+                () -> resitClient.signOff(created.getSlug(), new SignOffResit()),
                 FeignException.class
         );
         assertThat(exception.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());

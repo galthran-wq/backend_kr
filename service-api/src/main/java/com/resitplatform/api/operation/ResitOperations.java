@@ -31,4 +31,8 @@ public interface ResitOperations {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/resits/sign-on{slug}")
     SignOnResitResult signOn(@RequestParam("slug") String slug, @Valid @RequestBody SignOnResit command);
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/resits/sign-off{slug}")
+    SignOffResitResult signOff(@RequestParam("slug") String slug, @Valid @RequestBody SignOffResit command);
 }
