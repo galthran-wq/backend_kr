@@ -292,6 +292,27 @@ public class ResitApiTest extends FeignBasedRestTest {
         assertThat(exception.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
+    //
+    // find resit by slug test
+    @Test
+    void should_returnCorrectResitData_onSearchBySlug() {
+        auth.registerTeacher().login();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        auth.register().login();
+        ResitDto foundResit = resitClient.findBySlug(created.getSlug()).getResit();
+        assertThat(foundResit.getSlug()).isEqualTo(created.getSlug());
+    }
+
+    @Test
+    void should_return404forNotExisting_onSearchBySlug() {
+        auth.register().login();
+        FeignException exception = catchThrowableOfType(
+                () -> resitClient.findBySlug("not-existing"),
+                FeignException.class
+        );
+        assertThat(exception.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 
     public static ScheduleResit getScheduleResitCommand() {
         return ScheduleResit.builder()
