@@ -27,4 +27,8 @@ public interface ResitOperations {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/resits/{slug}")
     void cancelBySlug(@PathVariable("slug") String slug);
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/resits/sign-on{slug}")
+    SignOnResitResult signOn(@RequestParam("slug") String slug, @Valid @RequestBody SignOnResit command);
 }

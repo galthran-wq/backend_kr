@@ -56,4 +56,9 @@ public class ResitController implements ResitOperations {
         bus.executeCommand(new CancelResit(auth.currentUsername(), slug));
     }
 
+    @Override
+    public SignOnResitResult signOn(String slug, @Valid SignOnResit command) {
+        return bus.executeCommand(command.toBuilder().slug(slug).currentUsername(auth.currentUsername()).build());
+    }
+
 }

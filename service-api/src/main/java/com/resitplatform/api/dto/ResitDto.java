@@ -16,4 +16,5 @@ public class ResitDto {
     private String teacherName;
     private String image;
     private String description;
+    private ProfileDto[] participants;
 }

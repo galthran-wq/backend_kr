@@ -1,6 +1,7 @@
 package com.resitplatform.rest;
 
 import com.resitplatform.api.command.ScheduleResit;
+import com.resitplatform.api.command.SignOnResit;
 import com.resitplatform.api.command.UpdateResit;
 import com.resitplatform.api.dto.ResitDto;
 import com.resitplatform.api.operation.ResitClient;
@@ -17,8 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.Assertions.*;
 
 public class ResitApiTest extends FeignBasedRestTest {
 
@@ -91,28 +91,26 @@ public class ResitApiTest extends FeignBasedRestTest {
         assertThat(resit.getSlug()).isEqualTo(
                 slugService.makeSlug(scheduleResitCommand.getName())
         );
+        assertThat(resit.getName()).isEqualTo(scheduleResitCommand.getName());
+        assertThat(resit.getTeacherName()).isEqualTo(user.getUsername());
+        assertThat(resit.getDescription()).isEqualTo(scheduleResitCommand.getDescription());
+        assertThat(resit.getImage()).isEqualTo(scheduleResitCommand.getImage());
+        assertThat(resit.getParticipants()).isEmpty();
+    }
 
+    @Test
+    void should_forbidResitWithExistingName_onSchedule() {
+        auth.registerTeacher().login();
+
+        ScheduleResit scheduleResitCommand = getScheduleResitCommand();
+        resitClient.schedule(scheduleResitCommand);
+
+        // try schedule the same one
         FeignException scheduleException = catchThrowableOfType(
                 () -> resitClient.schedule(scheduleResitCommand),
                 FeignException.class
         );
         assertThat(scheduleException.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    void should_forbidResitWithExistingName_onSchedule() {
-        AuthSupport.RegisteredUser user = auth.registerTeacher().login();
-
-        ScheduleResit scheduleResitCommand = getScheduleResitCommand();
-        ResitDto resit = resitClient.schedule(scheduleResitCommand).getResit();
-
-        assertThat(resit.getSlug()).isEqualTo(
-                slugService.makeSlug(scheduleResitCommand.getName())
-        );
-        assertThat(resit.getName()).isEqualTo(scheduleResitCommand.getName());
-        assertThat(resit.getTeacherName()).isEqualTo(user.getUsername());
-        assertThat(resit.getDescription()).isEqualTo(scheduleResitCommand.getDescription());
-        assertThat(resit.getImage()).isEqualTo(scheduleResitCommand.getImage());
     }
     //
     // canceling
@@ -204,6 +202,57 @@ public class ResitApiTest extends FeignBasedRestTest {
 
     }
     //
+    //sign on resit
+    @Test
+    void should_returnCorrectData_onResitSignOn() {
+        auth.registerTeacher().login();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        AuthSupport.RegisteredUser user = auth.register().login();
+        ResitDto resit = resitClient.signOn(created.getSlug(), new SignOnResit()).getResit();
+        assertThat(resit.getParticipants().length).isEqualTo(1);
+        assertThat(resit.getParticipants()[0].getUsername()).isEqualTo(user.getUsername());
+    }
+
+    @Test
+    void should_refuseTeachers_onSignOn() {
+        auth.registerTeacher().login();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        FeignException signOnException = catchThrowableOfType(
+                () -> resitClient.signOn(created.getSlug(), new SignOnResit()),
+                FeignException.class
+        );
+        assertThat(signOnException.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    void should_returnCorrectNotExistingStatus_onSignOn() {
+        auth.register().login();
+
+        FeignException exception = catchThrowableOfType(
+                () -> resitClient.signOn("not-existing", new SignOnResit()),
+                FeignException.class
+        );
+
+        assertThat(exception.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void should_refuseAlreadySignedOn_onSignOn() {
+        auth.registerTeacher().login();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        AuthSupport.RegisteredUser user = auth.register().login();
+        resitClient.signOn(created.getSlug(), new SignOnResit());
+        FeignException exception = catchThrowableOfType(
+                () -> resitClient.signOn(created.getSlug(), new SignOnResit()),
+                FeignException.class
+        );
+        assertThat(exception.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
     public static ScheduleResit getScheduleResitCommand() {
         return ScheduleResit.builder()
                 .name(UUID.randomUUID().toString())
