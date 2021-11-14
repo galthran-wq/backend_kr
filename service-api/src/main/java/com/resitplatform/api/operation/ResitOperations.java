@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 public interface ResitOperations {
-    @GetMapping("/resits{?name,teacherName,limit,offset}")
-    GetResitsResult findByFilters(@RequestParam(required = false) String name,
-                                  @RequestParam(required = false) String teacherName,
-                                  @RequestParam(defaultValue = "20") Integer limit,
-                                  @RequestParam(defaultValue = "0") Integer offset);
+    @PostMapping("/resits/search{?limit,offset}")
+    GetResitsResult findByFilters(@RequestParam(defaultValue = "20") Integer limit,
+                                  @RequestParam(defaultValue = "0") Integer offset,
+                                  @RequestBody GetResits command);
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/resits")
@@ -29,10 +28,10 @@ public interface ResitOperations {
     void cancelBySlug(@PathVariable("slug") String slug);
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/resits/sign-on{slug}")
+    @PostMapping("/resits/{slug}/sign-on")
     SignOnResitResult signOn(@RequestParam("slug") String slug, @Valid @RequestBody SignOnResit command);
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/resits/sign-off{slug}")
+    @PostMapping("/resits/{slug}/sign-off")
     SignOffResitResult signOff(@RequestParam("slug") String slug, @Valid @RequestBody SignOffResit command);
 }

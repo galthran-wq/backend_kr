@@ -6,7 +6,9 @@ import com.resitplatform.api.command.SignOnResit;
 import com.resitplatform.api.command.UpdateResit;
 import com.resitplatform.api.dto.ResitDto;
 import com.resitplatform.api.operation.ResitClient;
+import com.resitplatform.api.query.GetResits;
 import com.resitplatform.application.service.SlugService;
+import com.resitplatform.domain.model.Resit;
 import com.resitplatform.rest.auth.AuthSupport;
 import com.resitplatform.rest.support.FeignBasedRestTest;
 import feign.FeignException;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -313,6 +316,84 @@ public class ResitApiTest extends FeignBasedRestTest {
         );
         assertThat(exception.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+    //
+    // find resits with filters
+    @Test
+    void should_returnCorrectResits_onSearchByFilters() {
+        auth.registerTeacher().login();
+        ResitDto firstCreated = resitClient.schedule(getScheduleResitCommand()
+                .toBuilder()
+                .name("...test_pattern...")
+                .build()
+        ).getResit();
+        ResitDto secondCreated = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+
+        auth.registerTeacher().login();
+        ResitDto thirdCreated = resitClient.schedule(getScheduleResitCommand()
+                .toBuilder()
+                .name("abc_test_pattern_abc")
+                .build()
+        ).getResit();
+        ResitDto fourthCreated = resitClient.schedule(getScheduleResitCommand()).getResit();
+
+        List<ResitDto> foundByTeacherName = resitClient.findByFilters(
+                20,
+                0,
+                GetResits.builder()
+                        .teacherName(thirdCreated.getTeacherName())
+                        .build()
+        ).getResits();
+
+        assertThat(foundByTeacherName.size()).isEqualTo(2);
+        assertThat(foundByTeacherName.get(0).getName()).isIn(thirdCreated.getName(), fourthCreated.getName());
+        assertThat(foundByTeacherName.get(1).getName()).isIn(thirdCreated.getName(), fourthCreated.getName());
+
+
+        List<ResitDto> foundByName = resitClient.findByFilters(
+                20,
+                0,
+                GetResits.builder()
+                        .name("test_pattern")
+                        .build()
+        ).getResits();
+
+        assertThat(foundByName.size()).isEqualTo(2);
+        assertThat(foundByName.get(0).getName()).isIn(firstCreated.getName(), thirdCreated.getName());
+        assertThat(foundByName.get(1).getName()).isIn(firstCreated.getName(), thirdCreated.getName());
+
+        AuthSupport.RegisteredUser firstStudent = auth.register().login();
+        resitClient.signOn(firstCreated.getSlug(), new SignOnResit());
+
+        AuthSupport.RegisteredUser secondStudent = auth.register().login();
+        resitClient.signOn(thirdCreated.getSlug(), new SignOnResit());
+
+        List<ResitDto> foundByParticipants = resitClient.findByFilters(
+                20,
+                0,
+                GetResits.builder()
+                        .participantNames(new String[]{firstStudent.getUsername(), secondStudent.getUsername()})
+                        .build()
+        ).getResits();
+
+        assertThat(foundByParticipants.size()).isEqualTo(2);
+        assertThat(foundByParticipants.get(0).getName()).isIn(thirdCreated.getName(), firstCreated.getName());
+        assertThat(foundByParticipants.get(1).getName()).isIn(thirdCreated.getName(), firstCreated.getName());
+
+        List<ResitDto> foundBySeveralFields = resitClient.findByFilters(
+                20,
+                0,
+                GetResits.builder()
+                        .teacherName(thirdCreated.getTeacherName())
+                        .participantNames(new String[]{firstStudent.getUsername(), secondStudent.getUsername()})
+                        .name("test_pattern")
+                        .build()
+        ).getResits();
+
+        assertThat(foundBySeveralFields.size()).isEqualTo(1);
+        assertThat(foundBySeveralFields.get(0).getName()).isEqualTo(thirdCreated.getName());
+    }
+
 
     public static ScheduleResit getScheduleResitCommand() {
         return ScheduleResit.builder()

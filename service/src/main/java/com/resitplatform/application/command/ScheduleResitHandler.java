@@ -42,7 +42,7 @@ public class ScheduleResitHandler implements CommandHandler<ScheduleResitResult,
         }
 
         Resit.ResitBuilder resitBuilder = Resit.builder()
-                .responsibleTeacher(currentUser) // todo is it right?
+                .responsibleTeacher(currentUser)
                 .image(command.getImage())
                 .id(UUID.randomUUID())
                 .slug(slugService.makeSlug(command.getName()))

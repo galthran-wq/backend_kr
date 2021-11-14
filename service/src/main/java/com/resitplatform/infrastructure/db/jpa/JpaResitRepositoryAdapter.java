@@ -1,6 +1,7 @@
 package com.resitplatform.infrastructure.db.jpa;
 
 import com.resitplatform.domain.model.Resit;
+import com.resitplatform.domain.model.User;
 import com.resitplatform.domain.repository.ResitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -27,19 +29,17 @@ public class JpaResitRepositoryAdapter implements ResitRepository {
         return repository.findByName(name);
     }
 
-    // todo
     @Override
-    public List<Resit> findByOwners(List<UUID> owners, Integer limit, Integer offset) {
+    public List<Resit> findByParticipants(Set<User> participants, Integer limit, Integer offset) {
         Pageable pageable = new OffsetBasedPageRequest(limit, offset, Sort.by(Sort.Order.desc("name")));
-        return repository.findByParticipants(owners, pageable);
+        return repository.findByParticipantsIn(participants, pageable);
     }
 
-//    // todo
-//    @Override
-//    public List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset) {
-//        Pageable pageable = new OffsetBasedPageRequest(limit, offset, Sort.by(Sort.Order.desc("name")));
-//        return repository.findByFilters(name, teacherName, pageable);
-//    }
+    @Override
+    public List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset) {
+        Pageable pageable = new OffsetBasedPageRequest(limit, offset, Sort.by(Sort.Order.desc("name")));
+        return repository.findByResponsibleTeacherUsernameContainingAndNameContaining(teacherName, name, pageable);
+    }
 
     @Override
     public void delete(Resit flower) {

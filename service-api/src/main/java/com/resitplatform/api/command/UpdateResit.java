@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Getter
-@JsonRootName("flower")
+@JsonRootName("resit")
 public class UpdateResit implements Command<UpdateResitResult> {
 
     private String name;
