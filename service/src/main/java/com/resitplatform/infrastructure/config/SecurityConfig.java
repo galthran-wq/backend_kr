@@ -38,12 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                // todo
-//                .antMatchers(HttpMethod.OPTIONS).permitAll()
-//                .antMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/resit/**", "/api/profiles/**").permitAll()
-//                .anyRequest().authenticated();
-                .anyRequest().permitAll();
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                .antMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/resit/**", "/api/profiles/**").permitAll()
+                .anyRequest().authenticated();
     }
 
     @Bean

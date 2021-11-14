@@ -8,7 +8,6 @@ import com.resitplatform.api.dto.ResitDto;
 import com.resitplatform.api.operation.ResitClient;
 import com.resitplatform.api.query.GetResits;
 import com.resitplatform.application.service.SlugService;
-import com.resitplatform.domain.model.Resit;
 import com.resitplatform.rest.auth.AuthSupport;
 import com.resitplatform.rest.support.FeignBasedRestTest;
 import feign.FeignException;
@@ -127,6 +126,7 @@ public class ResitApiTest extends FeignBasedRestTest {
         resitClient.cancelBySlug(created.getSlug());
 
         // assert that it is no more present
+        auth.registerTeacher().login();
         FeignException exception = catchThrowableOfType(
                 () -> resitClient.findBySlug(created.getSlug()),
                 FeignException.class
@@ -136,7 +136,7 @@ public class ResitApiTest extends FeignBasedRestTest {
     }
 
     @Test
-    void should_forbidNonresponsibleTeachers_onCancel() {
+    void should_forbidNonResponsibleTeachers_onCancel() {
         auth.registerTeacher().login();
 
         ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();

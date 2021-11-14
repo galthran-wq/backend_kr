@@ -6,7 +6,6 @@ import com.resitplatform.domain.model.User;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 public interface ResitRepository {
 
@@ -18,7 +17,7 @@ public interface ResitRepository {
 
     List<Resit> findByFilters(String name, String teacherName, Integer limit, Integer offset);
 
-    void delete(Resit resit);
+    void cancel(Resit resit);
 
     Resit save(Resit resit);
 }

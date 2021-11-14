@@ -42,8 +42,8 @@ public class JpaResitRepositoryAdapter implements ResitRepository {
     }
 
     @Override
-    public void delete(Resit flower) {
-        repository.delete(flower);
+    public void cancel(Resit resit) {
+        repository.delete(resit);
     }
 
     @Override

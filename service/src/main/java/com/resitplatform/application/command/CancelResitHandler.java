@@ -36,7 +36,7 @@ public class CancelResitHandler implements CommandHandler<CancelResitResult, Can
             throw ForbiddenException.forbidden("you are not responsible for this resit");
         }
 
-        resitRepository.delete(resitBySlug);
+        resitRepository.cancel(resitBySlug);
         return new CancelResitResult();
     }
 }
