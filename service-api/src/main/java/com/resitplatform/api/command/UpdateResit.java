@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -15,7 +17,9 @@ import java.util.Date;
 @Getter
 @JsonRootName("resit")
 public class UpdateResit implements Command<UpdateResitResult> {
-
+    // this enpdpoint works both for PUT and UPDATE, but we still require the name even
+    // for update
+    @NotBlank
     private String name;
     private String image;
     private String description;

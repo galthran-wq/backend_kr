@@ -274,6 +274,21 @@ public class ResitApiTest extends FeignBasedRestTest {
         assertThat(exception.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
+
+    @Test
+    void should_refuseForEndedResits_onSignOn() {
+        auth.registerTeacher().login();
+        ResitDto created = resitClient.schedule(getScheduleResitCommand()).getResit();
+        resitClient.updateBySlug(created.getSlug(), UpdateResit.builder().hasEnded(true).name(created.getName()).build());
+
+        auth.register().login();
+        FeignException exception = catchThrowableOfType(
+                () -> resitClient.signOn(created.getSlug(), new SignOnResit()),
+                FeignException.class
+        );
+        assertThat(exception.status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
     //
     // sign off resit
     @Test

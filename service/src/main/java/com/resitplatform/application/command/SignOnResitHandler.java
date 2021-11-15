@@ -36,6 +36,10 @@ public class SignOnResitHandler implements CommandHandler<SignOnResitResult, Sig
         Resit resit = resitRepository.findBySlug(command.getSlug())
                 .orElseThrow(() -> NotFoundException.notFound("resit [slug=%s] does not exist", command.getSlug()));
 
+        if (resit.getHasEnded()) {
+            throw BadRequestException.badRequest("the resit has ended");
+        }
+
         Set<User> currentParticipants = resit.getParticipants();
 
         if (currentParticipants.contains(currentUser)) {
