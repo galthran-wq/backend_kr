@@ -16,10 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -29,9 +26,20 @@ public class ResitApiTest extends FeignBasedRestTest {
     public static final String TEST_SLUG = "test-name";
     public static final String TEST_IMAGE = "test-image";
     public static final String TEST_DESCRIPTION = "test-description";
+    public static final Date TEST_DATE;
+
     public static final String ALTERED_NAME = "altered-name";
     public static final String ALTERED_DESCRIPTION = "altered-description";
     public static final String ALTERED_IMAGE = "test-image";
+    public static final Date ALTERED_DATE;
+
+    static {
+        Calendar cal = Calendar.getInstance();
+        cal.set(2021, Calendar.FEBRUARY, 1, 1, 1);
+        TEST_DATE = cal.getTime();
+        cal.set(2022, Calendar.FEBRUARY, 1, 1, 1);
+        ALTERED_DATE = cal.getTime();
+    }
 
     @Autowired
     private AuthSupport auth;
@@ -96,6 +104,8 @@ public class ResitApiTest extends FeignBasedRestTest {
         );
         assertThat(resit.getName()).isEqualTo(scheduleResitCommand.getName());
         assertThat(resit.getTeacherName()).isEqualTo(user.getUsername());
+        assertThat(resit.getStartDate().getYear()).isEqualTo(scheduleResitCommand.getStartDate().getYear());
+        assertThat(resit.getHasEnded()).isEqualTo(Boolean.FALSE);
         assertThat(resit.getDescription()).isEqualTo(scheduleResitCommand.getDescription());
         assertThat(resit.getImage()).isEqualTo(scheduleResitCommand.getImage());
         assertThat(resit.getParticipants()).isEmpty();
@@ -174,12 +184,18 @@ public class ResitApiTest extends FeignBasedRestTest {
                 .image(ALTERED_IMAGE)
                 .name(ALTERED_NAME)
                 .description(ALTERED_DESCRIPTION)
+                .startDate(ALTERED_DATE)
+                .hasEnded(true)
                 .build();
 
         ResitDto updated = resitClient.updateBySlug(created.getSlug(), updateCommand).getResit();
         assertThat(updated.getSlug()).isEqualTo(slugService.makeSlug(ALTERED_NAME));
         assertThat(updated.getTeacherName()).isEqualTo(user.getUsername());
         assertThat(updated.getName()).isEqualTo(ALTERED_NAME);
+        assertThat(updated.getStartDate().getYear()).isEqualTo(ALTERED_DATE.getYear());
+        assertThat(updated.getHasEnded()).isEqualTo(true);
+
+
         assertThat(updated.getDescription()).isEqualTo(ALTERED_DESCRIPTION);
         assertThat(updated.getImage()).isEqualTo(ALTERED_IMAGE);
     }
@@ -194,6 +210,8 @@ public class ResitApiTest extends FeignBasedRestTest {
                 .image(ALTERED_IMAGE)
                 .name(ALTERED_NAME)
                 .description(ALTERED_DESCRIPTION)
+                .startDate(ALTERED_DATE)
+                .hasEnded(true)
                 .build();
 
         // login as another teacher
@@ -400,6 +418,7 @@ public class ResitApiTest extends FeignBasedRestTest {
                 .name(UUID.randomUUID().toString())
                 .description(UUID.randomUUID().toString())
                 .image(UUID.randomUUID().toString())
+                .startDate(TEST_DATE)
                 .build();
     }
 

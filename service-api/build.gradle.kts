@@ -11,6 +11,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations")
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("org.springframework:spring-web")
+    implementation("org.springframework:spring-context")
 }
 
 tasks {

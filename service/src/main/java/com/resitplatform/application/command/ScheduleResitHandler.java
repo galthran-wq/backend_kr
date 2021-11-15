@@ -43,10 +43,12 @@ public class ScheduleResitHandler implements CommandHandler<ScheduleResitResult,
 
         Resit.ResitBuilder resitBuilder = Resit.builder()
                 .responsibleTeacher(currentUser)
+                .startDate(command.getStartDate())
                 .image(command.getImage())
                 .id(UUID.randomUUID())
                 .slug(slugService.makeSlug(command.getName()))
                 .name(command.getName())
+                .hasEnded(false)
                 .description(command.getDescription());
 
         Resit resit = resitRepository.save(resitBuilder.build());

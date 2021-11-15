@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,16 +18,18 @@ public class Resit {
 
     @Id
     private UUID id;
+    @NotBlank
     private String slug;
+    @NotBlank
     private String name;
     private String description;
     private String image;
 
-//    @Column(name="START_DATE")
-//    @Temporal(TemporalType.TIMESTAMP)
-//    @NotBlank
-//    private java.util.Date startDate;
-    private Boolean hasEnded;
+    @Column(name="START_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
+    private java.util.Date startDate;
+    private Boolean hasEnded = Boolean.FALSE;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private User responsibleTeacher;

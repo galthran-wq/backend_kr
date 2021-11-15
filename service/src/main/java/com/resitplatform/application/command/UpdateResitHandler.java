@@ -42,6 +42,8 @@ public class UpdateResitHandler implements CommandHandler<UpdateResitResult, Upd
 
         Resit updatedResit = resitBySlug.toBuilder()
                 .image(command.getImage())
+                .startDate(command.getStartDate())
+                .hasEnded(command.getHasEnded())
                 .description(command.getDescription())
                 .name(command.getName())
                 .slug(slugService.makeSlug(command.getName()))
