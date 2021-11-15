@@ -30,11 +30,6 @@ public class User {
     private String image;
     private Boolean is_teacher;
 
-    // todo resits
-//    @OneToOne(mappedBy = "buyer", cascade = CascadeType.ALL)
-//    @PrimaryKeyJoinColumn
-//    private ShoppingCart shoppingCart;
-
     @OneToMany(mappedBy = "responsibleTeacher", cascade = CascadeType.ALL)
     private Set<Resit> responsibleForResits;
 

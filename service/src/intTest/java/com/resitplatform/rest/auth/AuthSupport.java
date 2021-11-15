@@ -5,8 +5,6 @@ import com.resitplatform.api.command.LoginUser;
 import com.resitplatform.api.command.LoginUserResult;
 import com.resitplatform.api.command.RegisterUser;
 import com.resitplatform.api.operation.UserClient;
-import com.resitplatform.domain.model.User;
-import com.resitplatform.domain.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +18,11 @@ public class AuthSupport {
     @Autowired(required = false)
     private UserClient userClient;
 
-    @Autowired
-    private UserRepository userRepository;
-
     public RegisteredUser register() {
         String uuid = UUID.randomUUID().toString();
         return register(uuid, email(uuid), uuid);
     }
 
-    // todo is_teacher optional false by default
     public RegisteredUser register(String username, String email, String password, Boolean isTeacher) {
         userClient.register(RegisterUser.builder()
                 .username(username)
@@ -49,15 +43,6 @@ public class AuthSupport {
     }
 
     public RegisteredUser registerTeacher(String username, String email, String password) {
-//        RegisteredUser userDto = register(username, email, password);
-//        User user = userRepository.findByUsername(userDto.getUsername())
-//                .orElseThrow();
-//        userRepository.save(user
-//                .toBuilder()
-//                .is_teacher(Boolean.TRUE)
-//                .build()
-//        );
-//        return userDto;
         return register(username, email, password, Boolean.TRUE);
     }
 
