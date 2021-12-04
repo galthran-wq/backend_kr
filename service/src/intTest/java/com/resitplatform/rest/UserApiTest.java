@@ -140,6 +140,7 @@ public class UserApiTest extends FeignBasedRestTest {
                 .username(UUID.randomUUID().toString())
                 .email(UUID.randomUUID().toString() + "@ex.com")
                 .password(UUID.randomUUID().toString())
+                .isTeacher(false)
                 .build();
     }
 

@@ -29,9 +29,9 @@ public interface ResitOperations {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/resits/{slug}/sign-on")
-    SignOnResitResult signOn(@RequestParam("slug") String slug, @Valid @RequestBody SignOnResit command);
+    SignOnResitResult signOn(@PathVariable("slug") String slug, SignOnResit command); // we don't expect anything in request body
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/resits/{slug}/sign-off")
-    SignOffResitResult signOff(@RequestParam("slug") String slug, @Valid @RequestBody SignOffResit command);
+    SignOffResitResult signOff(@PathVariable("slug") String slug, SignOffResit command);
 }

@@ -1,7 +1,10 @@
 
 package com.resitplatform.rest;
 
+import com.resitplatform.api.command.RegisterUser;
 import com.resitplatform.api.dto.ProfileDto;
+import com.resitplatform.api.dto.UserDto;
+import com.resitplatform.api.query.GetProfilesResult;
 import com.resitplatform.rest.auth.AuthSupport;
 import com.resitplatform.rest.support.FeignBasedRestTest;
 import com.resitplatform.api.operation.ProfileClient;
@@ -45,6 +48,18 @@ public class ProfileApiTest extends FeignBasedRestTest {
         ProfileDto profile = profileClient.findByUsername("u1").getProfile();
 
         assertThat(profile.getUsername()).isEqualTo("u1");
+    }
+
+
+    @Test
+    void should_returnCorrectData_onList() {
+        auth.register("u1", "u1@example.com", "1234");
+
+        GetProfilesResult profiles = profileClient.list();
+
+        assertThat(profiles.getProfilesCount()).isEqualTo(1);
+        assertThat(profiles.getProfiles().get(0).getUsername()).isEqualTo("u1");
+
     }
 
 }

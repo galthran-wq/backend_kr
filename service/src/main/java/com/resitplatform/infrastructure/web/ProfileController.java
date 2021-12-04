@@ -2,8 +2,7 @@
 package com.resitplatform.infrastructure.web;
 
 import com.resitplatform.api.operation.ProfileOperations;
-import com.resitplatform.api.query.GetProfile;
-import com.resitplatform.api.query.GetProfileResult;
+import com.resitplatform.api.query.*;
 import com.resitplatform.bus.Bus;
 import com.resitplatform.application.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,11 @@ public class ProfileController implements ProfileOperations {
     @Override
     public GetProfileResult findByUsername(String username) {
         return bus.executeQuery(new GetProfile(auth.currentUsername(), username));
+    }
+
+    @Override
+    public GetProfilesResult list() {
+        return bus.executeQuery(new GetProfiles());
     }
 
 }

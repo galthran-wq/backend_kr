@@ -29,4 +29,9 @@ public class JpaUserRepositoryAdapter implements UserRepository {
         return repository.save(user);
     }
 
+    @Override
+    public Iterable<User> findAll() {
+        return repository.findAll();
+    }
+
 }
